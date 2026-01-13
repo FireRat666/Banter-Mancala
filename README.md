@@ -7,7 +7,7 @@ A fully synced multiplayer Mancala game for Banter using Space State Properties.
 Add to your Banter world HTML:
 
 ```html
-<script src="https://your-host/Mancala.js"></script>
+<script src="https://banter-mancala.firer.at/Mancala.js"></script>
 ```
 
 ## Configuration
@@ -15,7 +15,7 @@ Add to your Banter world HTML:
 Pass parameters via URL query string on the script src:
 
 ```html
-<script src="Mancala.js?boardPosition=0%201.5%20-2&lighting=lit"></script>
+<script src="https://banter-mancala.firer.at/Mancala.js?boardPosition=0%201.5%20-2&lighting=lit"></script>
 ```
 
 ### Available Parameters
