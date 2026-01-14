@@ -406,9 +406,10 @@
             ));
         }
 
+        // Pit/store needs unique material for dynamic highlighting
         await pit.AddComponent(new BS.BanterMaterial(
             config.hideBoard ? "Unlit/DiffuseTransparent" : shader,
-            "", color, BS.MaterialSide.Front, false
+            "", color, BS.MaterialSide.Front, false, `pit_${index}`
         ));
 
         // Add collider for clicks (only on playable pits, not stores)
@@ -605,7 +606,8 @@
             ));
         }
 
-        await stone.AddComponent(new BS.BanterMaterial(shader, "", color, BS.MaterialSide.Front, false));
+        // Stones need unique material instance
+        await stone.AddComponent(new BS.BanterMaterial(shader, "", color, BS.MaterialSide.Front, false, `stone_${pitIndex}_${stoneIndex}`));
 
         return stone;
     }
