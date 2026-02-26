@@ -13,12 +13,12 @@
 
     // --- Configuration ---
     const config = {
-        boardPosition: new BS.Vector3(0, 1.1, -2),
-        boardRotation: new BS.Vector3(0, 0, 0),
-        boardScale: new BS.Vector3(1, 1, 1),
-        resetPosition: new BS.Vector3(0, 0, 1.5),
-        resetRotation: new BS.Vector3(0, 0, 0),
-        resetScale: new BS.Vector3(1, 1, 1),
+        boardPosition: [0, 1.1, -2],
+        boardRotation: [0, 0, 0],
+        boardScale: [1, 1, 1],
+        resetPosition: [0, 0, 1.5],
+        resetRotation: [0, 0, 0],
+        resetScale: [1, 1, 1],
         instance: window.location.href.split('?')[0],
         hideUI: false,
         hideBoard: false,
@@ -33,16 +33,18 @@
         const s = str.trim();
         if (s.includes(' ')) {
             const parts = s.split(' ').map(Number);
-            if (parts.length === 3) return new BS.Vector3(parts[0], parts[1], parts[2]);
+            if (parts.length === 3) return [parts[0], parts[1], parts[2]];
         } else {
             const val = parseFloat(s);
-            if (!isNaN(val)) return new BS.Vector3(val, val, val);
+            if (!isNaN(val)) return [val, val, val];
         }
         return defaultVal;
     };
 
-    // Parse URL params from this script tag
+    // Parse URL params from this script tag immediately
     const currentScript = document.currentScript;
+    const scriptSrc = currentScript ? currentScript.src : null;
+
     if (currentScript) {
         const url = new URL(currentScript.src);
         const params = new URLSearchParams(url.search);
@@ -72,8 +74,8 @@
 
     function getModelUrl(modelName) {
         try {
-            if (currentScript) {
-                return new URL(`Models/${modelName}`, currentScript.src).href;
+            if (scriptSrc) {
+                return new URL(`Models/${modelName}`, scriptSrc).href;
             }
         } catch (e) { console.error("Error resolving model URL:", e); }
         return `Models/${modelName}`;
@@ -260,14 +262,6 @@
         rowSpacing: 0.6,
         stoneRadius: 0.05
     };
-
-    async function init() {
-        if (!window.BS) {
-            console.error("Banter SDK not found!");
-            return;
-        }
-        BS.BanterScene.GetInstance().On("unity-loaded", setupScene);
-    }
 
     async function setupScene() {
         console.log("Mancala: Setup Scene Started");
@@ -662,5 +656,30 @@
         });
     }
 
-    init();
+    // --- Main Initializer ---
+    let initialized = false;
+    const initGame = async () => {
+        if (initialized) return;
+        initialized = true;
+        console.log("Mancala: Initializing Game...");
+
+        // Convert config arrays to BS.Vector3 now that BS is available
+        config.boardPosition = new BS.Vector3(...config.boardPosition);
+        config.boardRotation = new BS.Vector3(...config.boardRotation);
+        config.boardScale = new BS.Vector3(...config.boardScale);
+        config.resetPosition = new BS.Vector3(...config.resetPosition);
+        config.resetRotation = new BS.Vector3(...config.resetRotation);
+        config.resetScale = new BS.Vector3(...config.resetScale);
+
+        await setupScene();
+    };
+
+    // --- Check for BS availability ---
+    if (window.BS) {
+        initGame();
+    } else {
+        window.addEventListener("unity-loaded", initGame);
+        window.addEventListener("bs-loaded", initGame);
+    }
+
 })();
